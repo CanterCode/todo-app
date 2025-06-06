@@ -6,9 +6,9 @@ const LoginButton: React.FC = () => {
 
     return (
         !isAuthenticated && (
-            <div className="d-flex justify-content-center align-items-center vh-100">
+            <div className="d-flex justify-content-center mt-4">
                 <button
-                    className="btn btn-primary"
+                    className="btn btn-primary btn-lg"
                     onClick={() => loginWithRedirect()}
                 >
                     Log In
