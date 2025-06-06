@@ -1,21 +1,21 @@
 import { useAuth0 } from "@auth0/auth0-react";
 
-const LoginButton: React.FC = () => {
+const LogoutButton: React.FC = () => {
 
-    const { loginWithRedirect, isAuthenticated } = useAuth0();
+    const { logout, isAuthenticated } = useAuth0();
 
     return (
-        !isAuthenticated && (
+        isAuthenticated && (
             <div className="d-flex justify-content-center align-items-center vh-100">
                 <button
                     className="btn btn-primary"
-                    onClick={() => loginWithRedirect()}
+                    onClick={() => logout({ logoutParams: { returnTo: `${window.location.origin}/login` } })}
                 >
-                    Log In
+                    Log Out
                 </button>
             </div>
         )
     );
 };
 
-export default LoginButton;
+export default LogoutButton;

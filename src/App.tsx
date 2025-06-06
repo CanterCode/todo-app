@@ -1,35 +1,53 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+
+import Login from "./pages/Login";
+import MainPage from "./pages/MainPage";
+import Dashboard from "./pages/Dashboard";
+import CreateTask from "./pages/CreateTask";
+import EditTask from "./pages/EditTask";
+import TaskDetails from "./pages/TaskDetails";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { isAuthenticated, isLoading, error } = useAuth0();
+
+  if (isLoading) {
+  return (
+    <div className="spinner-wrapper">
+      <div className="custom-spinner"></div>
+    </div>
+  );
+}
+  if (error)
+    return (
+      <div className="text-center text-danger mt-5">Oops: {error.message}</div>
+    );
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Routes>
+      <Route path="/login" element={<Login />} />
+
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <MainPage />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="create" element={<CreateTask />} />
+        <Route path="edit/:id" element={<EditTask />} />
+        <Route path="details/:id" element={<TaskDetails />} />
+      </Route>
+
+      <Route
+        path="*"
+        element={<Navigate to={isAuthenticated ? "/" : "/login"} replace />}
+      />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
