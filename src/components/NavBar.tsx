@@ -1,6 +1,6 @@
-import { Link, NavLink } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
-import { useAuth0 } from '@auth0/auth0-react';
+import { Link, NavLink } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Navbar: React.FC = () => {
   const { user } = useUser();
@@ -9,7 +9,9 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
-        <Link className="navbar-brand" to="/">Cander</Link>
+        <Link className="navbar-brand" to="/">
+          Cander
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -25,28 +27,35 @@ const Navbar: React.FC = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <NavLink className="nav-link" to="/">Dashboard</NavLink>
+              <NavLink className="nav-link" to="/">
+                Dashboard
+              </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/create">Create Task</NavLink>
+              <NavLink className="nav-link" to="/create">
+                Create Task
+              </NavLink>
             </li>
           </ul>
 
           {user && (
             <div className="d-flex align-items-center text-white">
-              <img
-                src={user.picture}
-                alt="User"
-                className="rounded-circle me-2"
-                width="32"
-                height="32"
-              />
+              {user.picture && (
+                <img
+                  src={user.picture}
+                  className="rounded-circle me-2"
+                  width="32"
+                  height="32"
+                />
+              )}
               <span className="me-3">Hello, {user.firstName}!</span>
               <button
                 className="btn btn-outline-light btn-sm"
                 onClick={() =>
                   logout({
-                    logoutParams: { returnTo: window.location.origin + '/login' },
+                    logoutParams: {
+                      returnTo: window.location.origin + "/login",
+                    },
                   })
                 }
               >
