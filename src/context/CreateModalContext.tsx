@@ -22,7 +22,7 @@ export const CreateModalProvider: React.FC<{ children: ReactNode }> = ({ childre
   );
 };
 
-export const useCreateModal = () => {
+export const useCreateModalContext = () => {
   const context = useContext(CreateModalContext);
   if (!context) {
     throw new Error("useCreateModal must be used within a CreateModalProvider");

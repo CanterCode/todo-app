@@ -32,8 +32,8 @@ const Navbar: React.FC = () => {
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/create">
-                Create Task
+              <NavLink className="nav-link" to="/">
+                view GitHub code here
               </NavLink>
             </li>
           </ul>
