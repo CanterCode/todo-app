@@ -7,7 +7,7 @@ import { useEditModalContext } from "../context/EditModalContext";
 
 const TaskDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { tasks, removeTask, toggleSubtasks } = useTaskContext();
+  const { tasks, removeTask, toggleSubtasks, updateTask } = useTaskContext();
   const navigate = useNavigate();
 
   const { showEditModal, openEditModal, closeEditModal } =
@@ -64,7 +64,9 @@ const TaskDetails: React.FC = () => {
                   className={`badge ${
                     task.completed ? "bg-success" : "bg-secondary"
                   }`}
-                >{taskCompleted(task)}</span>
+                >
+                  {taskCompleted(task)}
+                </span>
               </p>
               <p>
                 <strong>Priority:</strong>{" "}
@@ -121,6 +123,15 @@ const TaskDetails: React.FC = () => {
               )}
 
               <div className="d-flex justify-content-end gap-2">
+                <Button
+                  variant={task.completed ? "secondary" : "success"}
+                  className="me-2"
+                  onClick={() =>
+                    updateTask({ ...task, completed: !task.completed })
+                  }
+                >
+                  {task.completed ? "Mark Incomplete" : "Mark Complete"}
+                </Button>
                 <Button
                   onClick={openEditModal}
                   variant="warning"

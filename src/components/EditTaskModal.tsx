@@ -166,8 +166,6 @@ const EditTaskModal: React.FC<Props> = ({ show, handleClose, task }) => {
               onChange={(e) => setDueDate(e.target.value)}
             />
           </Form.Group>
-
-          
         </Form>
       </Modal.Body>
 
