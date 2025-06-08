@@ -2,15 +2,23 @@ import { useParams, Link } from "react-router-dom";
 import { useTaskContext } from "../context/TaskContext";
 import { Container, Row, Col, Button, Card, ListGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import EditTaskModal from "../components/EditTaskModal";
+import { useEditModalContext } from "../context/EditModalContext";
 
 const TaskDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { tasks, removeTask, toggleSubtasks } = useTaskContext();
   const navigate = useNavigate();
 
+  const { showEditModal, openEditModal, closeEditModal } =
+    useEditModalContext();
 
   const taskId = parseInt(id || "", 10);
   const task = tasks.find((t) => t.id === taskId);
+
+  const taskCompleted = (task: { completed: boolean }) => {
+    return task.completed ? "Completed" : "Not Completed";
+  };
 
   if (!task) return <p>Task not found.</p>;
 
@@ -51,9 +59,33 @@ const TaskDetails: React.FC = () => {
                 {task.description || "No description provided."}
               </p>
               <p>
+                <strong>Status: </strong>
+                <span
+                  className={`badge ${
+                    task.completed ? "bg-success" : "bg-secondary"
+                  }`}
+                >{taskCompleted(task)}</span>
+              </p>
+              <p>
                 <strong>Priority:</strong>{" "}
                 <span className="text-capitalize">{task.priority}</span>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "15px",
+                    height: "15px",
+                    backgroundColor:
+                      task.priority === "high"
+                        ? "red"
+                        : task.priority === "medium"
+                        ? "orange"
+                        : "blue",
+                    borderRadius: "2px",
+                    marginLeft: "8px",
+                  }}
+                />
               </p>
+
               <p>
                 <strong>Due Date:</strong>{" "}
                 {task.dueDate
@@ -89,7 +121,13 @@ const TaskDetails: React.FC = () => {
               )}
 
               <div className="d-flex justify-content-end gap-2">
-                <Button variant="warning">Edit Task</Button>
+                <Button
+                  onClick={openEditModal}
+                  variant="warning"
+                  className="me-2"
+                >
+                  Edit Task
+                </Button>
                 <Button
                   variant="danger"
                   onClick={() => {
@@ -104,6 +142,11 @@ const TaskDetails: React.FC = () => {
           </Card>
         </Col>
       </Row>
+      <EditTaskModal
+        show={showEditModal}
+        handleClose={closeEditModal}
+        task={task}
+      />{" "}
     </Container>
   );
 };

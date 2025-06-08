@@ -1,100 +1,89 @@
-import { useState } from "react";
-import { Modal, Button, Form, Alert } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
 import { useTaskContext } from "../context/TaskContext";
-import { useUser } from "../context/UserContext";
+import type { Task, Subtask } from "../components/Task";
 
 interface Props {
   show: boolean;
   handleClose: () => void;
+  task: Task | null;
 }
 
-const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
-  const { addTask } = useTaskContext();
-  const { user } = useUser();
+const EditTaskModal: React.FC<Props> = ({ show, handleClose, task }) => {
+  const { updateTask } = useTaskContext();
 
+  // Form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
-  const [subtasks, setSubtasks] = useState<
-    { id: number; title: string; completed: boolean }[]
-  >([]);
   const [dueDate, setDueDate] = useState("");
-  const [error, setError] = useState("");
+  const [subTasks, setSubTasks] = useState<Subtask[]>([]);
 
-  const handleSubmit = () => {
-    // Basic validation
-    if (!title.trim()) {
-      setError("Task title is required.");
-      return;
+  // Load data into form when modal opens or task changes
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setDescription(task.description || "");
+      setPriority(task.priority);
+      setDueDate(
+        task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : ""
+      );
+      setSubTasks(task.subtasks || []);
     }
+  }, [task]);
 
-    if (dueDate && new Date(dueDate) < new Date(new Date().toDateString())) {
-      setError("Due date cannot be in the past.");
-      return;
-    }
-
-    try {
-      const newTask = {
-        id: Date.now(),
-        title,
-        description,
-        completed: false,
-        priority,
-        userId: user?.id || "",
-        dueDate: dueDate ? new Date(dueDate) : undefined,
-        subtasks: subtasks.filter((subtask) => subtask.title.trim() !== ""),
-      };
-
-      addTask(newTask);
-      resetForm();
-      handleClose();
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
-    }
-  };
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setPriority("low");
-    setSubtasks([]);
-    setDueDate("");
-    setError("");
-  };
-
+  // Subtask helpers
   const addSubtask = () => {
-    setSubtasks([...subtasks, { id: Date.now(), title: "", completed: false }]);
+    setSubTasks((prev) => [
+      ...prev,
+      { id: Date.now(), title: "", completed: false },
+    ]);
   };
 
   const updateSubtaskTitle = (id: number, newTitle: string) => {
-    setSubtasks(
-      subtasks.map((subtask) =>
-        subtask.id === id ? { ...subtask, title: newTitle } : subtask
+    setSubTasks((prev) =>
+      prev.map((st) => (st.id === id ? { ...st, title: newTitle } : st))
+    );
+  };
+
+  const toggleSubtaskCompletion = (id: number) => {
+    setSubTasks((prev) =>
+      prev.map((st) =>
+        st.id === id ? { ...st, completed: !st.completed } : st
       )
     );
   };
 
   const removeSubtask = (id: number) => {
-    setSubtasks(subtasks.filter((subtask) => subtask.id !== id));
+    setSubTasks((prev) => prev.filter((st) => st.id !== id));
+  };
+
+  // Submit handler
+  const handleSubmit = () => {
+    if (!task || !title.trim()) return;
+
+    const updated: Task = {
+      ...task,
+      title,
+      description,
+      priority,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
+      subtasks: subTasks,
+    };
+
+    updateTask(updated);
+    handleClose();
   };
 
   return (
-    <Modal
-      show={show}
-      onHide={() => {
-        resetForm();
-        handleClose();
-      }}
-      centered
-    >
+    <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Create New Task</Modal.Title>
+        <Modal.Title>Edit Task</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
         <Form>
+          {/* Title */}
           <Form.Group className="mb-3">
             <Form.Label>Title*</Form.Label>
             <Form.Control
@@ -106,6 +95,7 @@ const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
             />
           </Form.Group>
 
+          {/* Description */}
           <Form.Group className="mb-3">
             <Form.Label>Description</Form.Label>
             <Form.Control
@@ -113,10 +103,10 @@ const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Optional task details"
             />
           </Form.Group>
 
+          {/* Priority */}
           <Form.Group className="mb-3">
             <Form.Label>Priority*</Form.Label>
             <Form.Select
@@ -131,6 +121,7 @@ const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
             </Form.Select>
           </Form.Group>
 
+          {/* Subtasks */}
           <Form.Group className="mb-3">
             <Form.Label className="d-block">Subtasks:</Form.Label>
             <div className="mb-2">
@@ -138,16 +129,22 @@ const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
                 + Add Subtask
               </Button>
             </div>
-            {subtasks.map((subtask, index) => (
+            {subTasks.map((subtask, idx) => (
               <div key={subtask.id} className="d-flex mb-2">
                 <Form.Control
                   type="text"
-                  placeholder={`Subtask ${index + 1}`}
+                  placeholder={`Subtask ${idx + 1}`}
                   value={subtask.title}
                   onChange={(e) =>
                     updateSubtaskTitle(subtask.id, e.target.value)
                   }
                   className="me-2"
+                />
+                <Form.Check
+                  type="checkbox"
+                  checked={subtask.completed}
+                  onChange={() => toggleSubtaskCompletion(subtask.id)}
+                  className="me-2 mt-2"
                 />
                 <Button
                   variant="danger"
@@ -160,34 +157,30 @@ const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
             ))}
           </Form.Group>
 
-          <Form.Group>
+          {/* Due Date */}
+          <Form.Group className="mb-3">
             <Form.Label>Due Date</Form.Label>
             <Form.Control
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]} // restrict past dates
             />
           </Form.Group>
+
+          
         </Form>
       </Modal.Body>
 
       <Modal.Footer>
-        <Button
-          variant="secondary"
-          onClick={() => {
-            resetForm();
-            handleClose();
-          }}
-        >
+        <Button variant="secondary" onClick={handleClose}>
           Cancel
         </Button>
         <Button variant="primary" onClick={handleSubmit}>
-          Add Task
+          Update Task
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default CreateTaskModal;
+export default EditTaskModal;

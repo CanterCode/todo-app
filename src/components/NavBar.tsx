@@ -32,9 +32,9 @@ const Navbar: React.FC = () => {
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/">
-                view GitHub code here
-              </NavLink>
+              <Link to="https://github.com/CanterCode/todo-app" className="nav-link" target="_blank" rel="noopener noreferrer">
+              GitHub Repository
+              </Link>
             </li>
           </ul>
 

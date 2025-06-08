@@ -51,7 +51,15 @@ const Dashboard = () => {
                   className="me-3"
                   style={{ listStyleType: "none" }}
                 />
-                <span>{task.title}</span>
+                <span
+                  className={`form-check-label ${
+                    task.completed
+                      ? "text-decoration-line-through text-muted"
+                      : ""
+                  }`}
+                >
+                  {task.title}
+                </span>
                 <span
                   style={{
                     display: "inline-block",
@@ -62,7 +70,7 @@ const Dashboard = () => {
                         ? "red"
                         : task.priority === "medium"
                         ? "orange"
-                        : "yellow",
+                        : "#98FF98",
                     borderRadius: "2px",
                     marginLeft: "8px",
                   }}
@@ -70,13 +78,9 @@ const Dashboard = () => {
               </div>
 
               <div>
-                
-                <Link to= {`/details/${task.id}`}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="me-2"
-                    >View Details
+                <Link to={`/details/${task.id}`}>
+                  <Button variant="secondary" size="sm" className="me-2">
+                    View Details
                   </Button>
                 </Link>
                 <Button
@@ -96,26 +100,25 @@ const Dashboard = () => {
             )}
 
             {task.subtasks && task.subtasks.length > 0 && (
-            <Button
-                  variant="link"
-                  size="sm"
-                  onClick={() =>
-                    setExpandedTaskIds((prev) =>
-                      prev.includes(task.id)
-                        ? prev.filter((id) => id !== task.id)
-                        : [...prev, task.id]
-                    )
-                  }
-                >
-                  {expandedTaskIds.includes(task.id)
-                    ? "Hide Subtasks"
-                    : "View Subtasks"}
-                </Button>
-                )}
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() =>
+                  setExpandedTaskIds((prev) =>
+                    prev.includes(task.id)
+                      ? prev.filter((id) => id !== task.id)
+                      : [...prev, task.id]
+                  )
+                }
+              >
+                {expandedTaskIds.includes(task.id)
+                  ? "Hide Subtasks"
+                  : "View Subtasks"}
+              </Button>
+            )}
 
             {task.subtasks && task.subtasks.length > 0 && (
               <div>
-
                 {expandedTaskIds.includes(task.id) && (
                   <div className="ms-4 mt-2">
                     {task.subtasks.map((subtask) => (
