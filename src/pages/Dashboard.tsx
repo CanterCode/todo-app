@@ -3,19 +3,7 @@ import { useState } from "react";
 import { Button, Card, Form } from "react-bootstrap";
 import { useCreateModalContext } from "../context/CreateModalContext";
 import CreateTaskModal from "../components/CreateTaskModal";
-
-const getPriorityColor = (priority: "low" | "medium" | "high") => {
-  switch (priority) {
-    case "high":
-      return "text-danger"; // red
-    case "medium":
-      return "text-warning"; // orange/yellow
-    case "low":
-      return "text-secondary"; // gray
-    default:
-      return "";
-  }
-};
+import { Link } from "react-router-dom";
 
 const priorityRank = {
   high: 1,
@@ -24,10 +12,10 @@ const priorityRank = {
 };
 
 const Dashboard = () => {
-  const { tasks, updateTask, removeTask } = useTaskContext();
+  const { tasks, updateTask, removeTask, toggleSubtasks } = useTaskContext();
   const { showCreateModal, openCreateModal, closeCreateModal } =
     useCreateModalContext();
-  const [expandedTaskId, setExpandedTaskId] = useState<number | null>(null);
+  const [expandedTaskIds, setExpandedTaskIds] = useState<number[]>([]);
 
   const sortedTasks = [...tasks].sort((a, b) => {
     const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
@@ -64,32 +52,33 @@ const Dashboard = () => {
                   style={{ listStyleType: "none" }}
                 />
                 <span>{task.title}</span>
-<span
-  className={`priority-rectangle ${
-    task.priority === "high"
-      ? "bg-danger"
-      : task.priority === "medium"
-      ? "bg-warning"
-      : "bg-secondary"
-  }`}
-/>
-                  {task.title}
-                </span>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "15px",
+                    height: "15px",
+                    backgroundColor:
+                      task.priority === "high"
+                        ? "red"
+                        : task.priority === "medium"
+                        ? "orange"
+                        : "yellow",
+                    borderRadius: "2px",
+                    marginLeft: "8px",
+                  }}
+                />
               </div>
 
               <div>
-                <Button
-                  variant="info"
-                  size="sm"
-                  className="me-2"
-                  onClick={() =>
-                    setExpandedTaskId(
-                      task.id === expandedTaskId ? null : task.id
-                    )
-                  }
-                >
-                  View Details
-                </Button>
+                
+                <Link to= {`/details/${task.id}`}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="me-2"
+                    >View Details
+                  </Button>
+                </Link>
                 <Button
                   variant="danger"
                   size="sm"
@@ -107,23 +96,27 @@ const Dashboard = () => {
             )}
 
             {task.subtasks && task.subtasks.length > 0 && (
-              <>
-                <Button
+            <Button
                   variant="link"
                   size="sm"
-                  className="ms-4 mt-2 p-0"
                   onClick={() =>
-                    setExpandedTaskId(
-                      task.id === expandedTaskId ? null : task.id
+                    setExpandedTaskIds((prev) =>
+                      prev.includes(task.id)
+                        ? prev.filter((id) => id !== task.id)
+                        : [...prev, task.id]
                     )
                   }
                 >
-                  {expandedTaskId === task.id
+                  {expandedTaskIds.includes(task.id)
                     ? "Hide Subtasks"
                     : "View Subtasks"}
                 </Button>
+                )}
 
-                {expandedTaskId === task.id && (
+            {task.subtasks && task.subtasks.length > 0 && (
+              <div>
+
+                {expandedTaskIds.includes(task.id) && (
                   <div className="ms-4 mt-2">
                     {task.subtasks.map((subtask) => (
                       <div className="form-check mb-1" key={subtask.id}>
@@ -131,16 +124,22 @@ const Dashboard = () => {
                           type="checkbox"
                           className="form-check-input"
                           checked={subtask.completed}
-                          readOnly
+                          onChange={() => toggleSubtasks(task.id, subtask.id)}
                         />
-                        <label className="form-check-label ms-2">
+                        <label
+                          className={`form-check-label ms-2 ${
+                            subtask.completed
+                              ? "text-decoration-line-through text-muted"
+                              : ""
+                          }`}
+                        >
                           {subtask.title}
                         </label>
                       </div>
                     ))}
                   </div>
                 )}
-              </>
+              </div>
             )}
           </Card.Body>
         </Card>

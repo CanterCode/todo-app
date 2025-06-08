@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import type { ReactNode } from "react";
 import type { Task } from "../components/Task";
 
@@ -7,34 +7,53 @@ interface TaskContextType {
   addTask: (task: Task) => void;
   removeTask: (id: number) => void;
   updateTask: (updatedTask: Task) => void;
-  toggleSubtask: (taskId: number, subtaskId: number) => void;
+  toggleSubtasks: (taskId: number, subtaskId: number) => void;
   addSubtask: (taskId: number, title: string) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
-export const TaskProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    try {
+      const stored = localStorage.getItem("tasks");
+      if (!stored) return [];
+
+      const parsed = JSON.parse(stored);
+      return parsed.map((task: any) => ({
+        ...task,
+        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+        subtasks: task.subtasks?.map((subtask: any) => ({
+          ...subtask,
+        })) || [],
+      }));
+    } catch (err) {
+      console.error("Error loading tasks from localStorage:", err);
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const addTask = (task: Task) => {
-    setTasks((prevTasks) => [...prevTasks, task]);
+    setTasks((prev) => [...prev, task]);
   };
 
   const removeTask = (id: number) => {
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
   const updateTask = (updatedTask: Task) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    setTasks((prev) =>
+      prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
     );
   };
 
-  const toggleSubtask = (taskId: number, subtaskId: number) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
+  const toggleSubtasks = (taskId: number, subtaskId: number) => {
+    setTasks((prev) =>
+      prev.map((task) => {
         if (task.id !== taskId || !task.subtasks) return task;
 
         const updatedSubtasks = task.subtasks.map((subtask) =>
@@ -49,26 +68,35 @@ export const TaskProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const addSubtask = (taskId: number, title: string) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
+    setTasks((prev) =>
+      prev.map((task) => {
         if (task.id !== taskId) return task;
+
         const newSubtask = {
           id: Date.now(),
           title,
           completed: false,
         };
+
         return {
           ...task,
-          subtasks: task.subtasks
-            ? [...task.subtasks, newSubtask]
-            : [newSubtask],
+          subtasks: task.subtasks ? [...task.subtasks, newSubtask] : [newSubtask],
         };
       })
     );
   };
 
   return (
-    <TaskContext.Provider value={{ tasks, addTask, removeTask, updateTask, toggleSubtask, addSubtask }}>
+    <TaskContext.Provider
+      value={{
+        tasks,
+        addTask,
+        removeTask,
+        updateTask,
+        toggleSubtasks,
+        addSubtask,
+      }}
+    >
       {children}
     </TaskContext.Provider>
   );

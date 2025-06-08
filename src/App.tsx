@@ -4,7 +4,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Login from "./pages/Login";
 import MainPage from "./pages/MainPage";
 import Dashboard from "./pages/Dashboard";
-import EditTask from "./pages/EditTask";
 import TaskDetails from "./pages/TaskDetails";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -36,7 +35,6 @@ function App() {
         }
       >
         <Route index element={<Dashboard />} />
-        <Route path="edit/:id" element={<EditTask />} />
         <Route path="details/:id" element={<TaskDetails />} />
       </Route>
 
