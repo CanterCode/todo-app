@@ -5,25 +5,26 @@ import { useCreateModalContext } from "../context/CreateModalContext";
 import CreateTaskModal from "../components/CreateTaskModal";
 import { Link } from "react-router-dom";
 
-const priorityRank = {
-  high: 1,
-  medium: 2,
-  low: 3,
-};
 
 const Dashboard = () => {
   const { tasks, updateTask, removeTask, toggleSubtasks } = useTaskContext();
   const { showCreateModal, openCreateModal, closeCreateModal } =
     useCreateModalContext();
   const [expandedTaskIds, setExpandedTaskIds] = useState<number[]>([]);
+  const [sortBy, setSortBy] = useState<"dueDate" | "priority">("dueDate");
 
   const sortedTasks = [...tasks].sort((a, b) => {
+  if (sortBy === "dueDate") {
     const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
     const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+    return dateA - dateB;
+  }
 
-    if (dateA !== dateB) return dateA - dateB;
-    return priorityRank[a.priority] - priorityRank[b.priority];
+  // Priority sorting
+  const priorityRank: { [key: string]: number } = { high: 1, medium: 2, low: 3 };
+  return priorityRank[a.priority] - priorityRank[b.priority];
   });
+
 
   const toggleComplete = (taskId: number) => {
     const task = tasks.find((t) => t.id === taskId);
@@ -38,6 +39,18 @@ const Dashboard = () => {
         <h2>Your Current Tasks</h2>
         <Button onClick={openCreateModal}>+ Create Task</Button>
       </div>
+
+      <Form.Group className="mb-3" controlId="sortBy">
+        <Form.Label className="me-2">Sort Tasks By: </Form.Label>
+        <Form.Select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as "dueDate" | "priority")}
+          style={{ width: "200px", display: "inline-block" }}
+        >
+          <option value="dueDate">Due Date</option>
+          <option value="priority">Priority</option>
+        </Form.Select>
+      </Form.Group>
 
       {sortedTasks.map((task) => (
         <Card key={task.id} className="mb-3">

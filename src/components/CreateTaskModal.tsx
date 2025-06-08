@@ -20,13 +20,29 @@ const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
   >([]);
   const [dueDate, setDueDate] = useState("");
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState<{ title?: string; dueDate?: string }>(
+    {}
+  );
+
+  const validateForm = () => {
+    const newErrors: { title?: string; dueDate?: string } = {};
+
+    if (!title.trim()) {
+      newErrors.title = "Title is required.";
+    }
+
+    if (dueDate && isNaN(new Date(dueDate).getTime())) {
+      newErrors.dueDate = "Invalid due date.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = () => {
-    // Basic validation
-    if (!title.trim()) {
-      setError("Task title is required.");
-      return;
-    }
+    const isValid = validateForm(); // Run validation first
+
+    if (!isValid) return; // Don't proceed if form is invalid
 
     if (dueDate && new Date(dueDate) < new Date(new Date().toDateString())) {
       setError("Due date cannot be in the past.");
@@ -103,7 +119,11 @@ const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter task title"
               required
+              isInvalid={!!errors.title}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.title}
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-3">
@@ -166,8 +186,12 @@ const CreateTaskModal: React.FC<Props> = ({ show, handleClose }) => {
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]} // restrict past dates
+              min={new Date().toISOString().split("T")[0]}
+              isInvalid={!!errors.dueDate}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.dueDate}
+            </Form.Control.Feedback>
           </Form.Group>
         </Form>
       </Modal.Body>

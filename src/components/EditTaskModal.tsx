@@ -18,6 +18,9 @@ const EditTaskModal: React.FC<Props> = ({ show, handleClose, task }) => {
   const [priority, setPriority] = useState<"low" | "medium" | "high">("low");
   const [dueDate, setDueDate] = useState("");
   const [subTasks, setSubTasks] = useState<Subtask[]>([]);
+  const [errors, setErrors] = useState<{ title?: string; dueDate?: string }>(
+    {}
+  );
 
   // Load data into form when modal opens or task changes
   useEffect(() => {
@@ -58,12 +61,29 @@ const EditTaskModal: React.FC<Props> = ({ show, handleClose, task }) => {
     setSubTasks((prev) => prev.filter((st) => st.id !== id));
   };
 
-  // Submit handler
-  const handleSubmit = () => {
-    if (!task || !title.trim()) return;
+  const validateForm = () => {
+    const newErrors: { title?: string; dueDate?: string } = {};
 
-    const updated: Task = {
+    if (!title.trim()) {
+      newErrors.title = "Title is required.";
+    }
+
+    if (dueDate && isNaN(new Date(dueDate).getTime())) {
+      newErrors.dueDate = "Invalid due date.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (!validateForm()) return;
+
+    if (!task || typeof task.id !== "number") return;
+
+    const updatedTask: Task = {
       ...task,
+      id: task.id,
       title,
       description,
       priority,
@@ -71,7 +91,7 @@ const EditTaskModal: React.FC<Props> = ({ show, handleClose, task }) => {
       subtasks: subTasks,
     };
 
-    updateTask(updated);
+    updateTask(updatedTask);
     handleClose();
   };
 
@@ -92,7 +112,11 @@ const EditTaskModal: React.FC<Props> = ({ show, handleClose, task }) => {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter task title"
               required
+              isInvalid={!!errors.title}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.title}
+            </Form.Control.Feedback>
           </Form.Group>
 
           {/* Description */}
@@ -164,7 +188,11 @@ const EditTaskModal: React.FC<Props> = ({ show, handleClose, task }) => {
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
+              isInvalid={!!errors.dueDate}
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.dueDate}
+            </Form.Control.Feedback>
           </Form.Group>
         </Form>
       </Modal.Body>
