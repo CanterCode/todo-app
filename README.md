@@ -78,42 +78,18 @@ Pull requests are welcome! For major changes, open an issue first to discuss wha
 
 ## ⚙️ Installation & Setup
 
-### 1. Clone the Repository
-
 ```bash
 git clone https://github.com/your-username/todo-app.git
 cd todo-app
-2. Install Dependencies
-Make sure you have Node.js and npm installed (Node.js 16+ recommended).
-
-bash
-Copy
-Edit
 npm install
-3. Set Up Environment Variables
-Create a .env file in the root directory and add the following variables:
 
+```bash
 env
-Copy
-Edit
 VITE_AUTH0_DOMAIN=your-auth0-domain
 VITE_AUTH0_CLIENT_ID=your-auth0-client-id
 VITE_API_BASE_URL=http://localhost:5000
 Replace the placeholders with your actual Auth0 and backend config.
 
-4. Start the Development Server
-bash
-Copy
-Edit
+```bash
 npm run dev
 The app should now be running at http://localhost:5173
-
-5. Backend API (Optional)
-If you're using a custom backend (e.g., Express), ensure it's running on the same base URL as defined in VITE_API_BASE_URL.
-
-bash
-Copy
-Edit
-cd backend/
-npm install
-npm run start
