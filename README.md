@@ -83,13 +83,11 @@ git clone https://github.com/your-username/todo-app.git
 cd todo-app
 npm install
 
-```bash
 env
 VITE_AUTH0_DOMAIN=your-auth0-domain
 VITE_AUTH0_CLIENT_ID=your-auth0-client-id
 VITE_API_BASE_URL=http://localhost:5000
 Replace the placeholders with your actual Auth0 and backend config.
 
-```bash
 npm run dev
 The app should now be running at http://localhost:5173
