@@ -1,54 +1,75 @@
-# React + TypeScript + Vite
+# 📝 Cander Task Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Cander is a full-featured task management web application built with React and TypeScript. It allows users to create, edit, delete, and organize tasks and subtasks with priorities, due dates, and completion tracking.
 
-Currently, two official plugins are available:
+This project was created for the purposes of completing the Coding Temple Front End Specialization Module 1 Knowledge Check.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- ✅ User authentication with Auth0
+- ✅ Create, edit, and delete tasks and subtasks
+- ✅ Track task completion status
+- ✅ Sort tasks by due date or priority
+- ✅ Subtasks management with visual indicators
+- ✅ Responsive UI with custom styling
+- ✅ Completed tasks move to the bottom and are visually distinct
+- ✅ GitHub-linked source code for transparency
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Frontend:** React, TypeScript, React Router, Bootstrap
+- **Auth:** Auth0 for secure login/logout
+- **State Management:** React Context API
+- **Styling:** Bootstrap 5 + Custom CSS
+- **Backend:** _Not connected yet – frontend-only_  
+  (Easily extensible to include a backend with Node.js/Express and a database like MongoDB)
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+---
+
+## 🧱 Project Structure
+
+src/
+├── components/ # Reusable UI components (NavBar, TaskCard, etc.)
+├── context/ # UserContext for authentication state
+├── pages/ # Dashboard, TaskDetails, Login, etc.
+├── styles/ # Custom CSS files
+├── modals/ # Modal components like CreateTaskModal, EditTaskModal
+├── types/ # TypeScript interfaces and types
+├── App.tsx # App root with routing
+└── index.tsx # Entry point
+
+---
+
+## 📄 Usage
+
+1. **Log in** using your Auth0 credentials.
+2. On the **Dashboard**, you can:
+   - Create new tasks with a title, description, due date, and priority.
+   - Toggle completion for tasks and subtasks.
+   - View all active tasks at the top and completed tasks at the bottom.
+   - Use the “Sort By” dropdown to reorder by due date or priority.
+   - Click “View Details” to open a detailed task view with all subtasks and edit/delete options.
+3. On the **Task Details** page:
+   - See the full task description, due date, and priority.
+   - Toggle the completion status of subtasks.
+   - Edit or delete the task using the action buttons.
+4. Use the **logout** button on the top right to securely log out of your session.
+
+---
+
+## 💡 Future Improvements
+- 🗃️ Backend integration for persistent data
+- 📱 Mobile app version
+- 🗓️ Calendar or timeline view
+- 🔔 Notifications & reminders
+- 🧑‍🤝‍🧑 Team collaboration
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! For major changes, open an issue first to discuss what you’d like to change.
