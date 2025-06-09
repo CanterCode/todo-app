@@ -1,0 +1,120 @@
+* Container for the entire task details page */
+.task-details-page {
+  color: #f8f9fa;
+  background-color: #121c24;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar-section {
+  background-color: #1b2836;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.back-link a {
+  color: #a8d0e6;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.back-link a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.task-list-group {
+  background-color: transparent;
+}
+
+.task-list-item {
+  background-color: #1f2e3c;
+  color: #f8f9fa;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 0.4rem;
+  transition: background-color 0.3s ease;
+}
+
+.task-list-item:hover {
+  background-color: #2a3d52;
+}
+
+.task-list-item.active {
+  background-color: #346699;
+  font-weight: bold;
+}
+
+/* Main Task Detail Card */
+.task-main-card {
+  padding: 0 1rem;
+}
+
+
+
+.task-header {
+  background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+  color: #ffffff;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+
+.task-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.task-body p {
+  margin-bottom: 1rem;
+}
+
+/* Priority Indicator */
+.priority-indicator {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  margin-left: 8px;
+}
+
+.priority-high {
+  background-color: #e74c3c;
+}
+
+.priority-medium {
+  background-color: #f39c12;
+}
+
+.priority-low {
+  background-color: #2ecc71;
+}
+
+/* Subtasks */
+.subtask-title {
+  font-size: 1rem;
+  color: #000000;
+  margin-bottom: 0.5rem;
+}
+
+.subtask-list {
+  background-color: transparent;
+}
+
+.subtask-item {
+  background-color: #2b3b4e;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 0.4rem;
+}
+
+/* Buttons */
+.task-buttons .btn {
+  min-width: 130px;
+  font-weight: 500;
+  transition: transform 0.2s;
+}
+
+.task-buttons .btn:hover {
+  transform: scale(1.03);
+}

@@ -1,69 +1,65 @@
 import { Link, NavLink } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { useAuth0 } from "@auth0/auth0-react";
+import "../styles/NavBar.css";
 
 const Navbar: React.FC = () => {
   const { user } = useUser();
   const { logout } = useAuth0();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container-fluid">
-        <Link className="navbar-brand" to="/">
+    <nav className="custom-navbar shadow-sm py-4">
+      <div className="container-fluid d-flex justify-content-between align-items-center">
+        
+        {/* Left side - Nav Links */}
+        <ul className="nav-links d-flex mb-0">
+          <li className="nav-item">
+            <NavLink className="nav-link me-3" to="/">Dashboard</NavLink>
+          </li>
+          <li className="nav-item">
+            <a
+              href="https://github.com/CanterCode/todo-app"
+              className="nav-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+          </li>
+        </ul>
+
+        {/* Center - Brand */}
+        <Link className="navbar-brand center-brand " to="/">
           Cander
         </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/">
-                Dashboard
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <Link to="https://github.com/CanterCode/todo-app" className="nav-link" target="_blank" rel="noopener noreferrer">
-              GitHub Repository
-              </Link>
-            </li>
-          </ul>
-
-          {user && (
-            <div className="d-flex align-items-center text-white">
-              {user.picture && (
-                <img
-                  src={user.picture}
-                  className="rounded-circle me-2"
-                  width="32"
-                  height="32"
-                />
-              )}
-              <span className="me-3">Hello, {user.firstName}!</span>
-              <button
-                className="btn btn-outline-light btn-sm"
-                onClick={() =>
-                  logout({
-                    logoutParams: {
-                      returnTo: window.location.origin + "/login",
-                    },
-                  })
-                }
-              >
-                Log Out
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Right side - User Info */}
+        {user && (
+          <div className="user-info d-flex align-items-center">
+            {user.picture && (
+              <img
+                src={user.picture}
+                alt="User"
+                className="rounded-circle me-2"
+                width="32"
+                height="32"
+              />
+            )}
+            <span className="text-white me-3">Hi, {user.firstName}</span>
+            <button
+              className="btn btn-logout"
+              onClick={() =>
+                logout({
+                  logoutParams: {
+                    returnTo: window.location.origin + "/login",
+                  },
+                })
+              }
+            >
+              Log Out
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );

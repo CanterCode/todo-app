@@ -4,7 +4,7 @@ import { Button, Card, Form } from "react-bootstrap";
 import { useCreateModalContext } from "../context/CreateModalContext";
 import CreateTaskModal from "../components/CreateTaskModal";
 import { Link } from "react-router-dom";
-
+import "../styles/Dashboard.css";
 
 const Dashboard = () => {
   const { tasks, updateTask, removeTask, toggleSubtasks } = useTaskContext();
@@ -14,17 +14,20 @@ const Dashboard = () => {
   const [sortBy, setSortBy] = useState<"dueDate" | "priority">("dueDate");
 
   const sortedTasks = [...tasks].sort((a, b) => {
-  if (sortBy === "dueDate") {
-    const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-    const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
-    return dateA - dateB;
-  }
+    if (sortBy === "dueDate") {
+      const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
+      const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+      return dateA - dateB;
+    }
 
-  // Priority sorting
-  const priorityRank: { [key: string]: number } = { high: 1, medium: 2, low: 3 };
-  return priorityRank[a.priority] - priorityRank[b.priority];
+    // Priority sorting
+    const priorityRank: { [key: string]: number } = {
+      high: 1,
+      medium: 2,
+      low: 3,
+    };
+    return priorityRank[a.priority] - priorityRank[b.priority];
   });
-
 
   const toggleComplete = (taskId: number) => {
     const task = tasks.find((t) => t.id === taskId);
@@ -35,17 +38,20 @@ const Dashboard = () => {
 
   return (
     <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Your Current Tasks</h2>
-        <Button onClick={openCreateModal}>+ Create Task</Button>
+      <div className="d-flex justify-content-between align-items-center mb-4 dashboard-header">
+        <h2 className="dashboard-title">Your Current Tasks</h2>
+        <Button onClick={openCreateModal} className="create-btn">
+          + Create Task
+        </Button>
       </div>
 
-      <Form.Group className="mb-3" controlId="sortBy">
-        <Form.Label className="me-2">Sort Tasks By: </Form.Label>
+      <Form.Group className="mb-3 sort-group" controlId="sortBy">
+        <Form.Label className="me-2">Sort Tasks By:</Form.Label>
         <Form.Select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as "dueDate" | "priority")}
-          style={{ width: "200px", display: "inline-block" }}
+          className="sort-select"
+          style={{ width: "150px", display: "inline-block" }}
         >
           <option value="dueDate">Due Date</option>
           <option value="priority">Priority</option>
@@ -53,7 +59,7 @@ const Dashboard = () => {
       </Form.Group>
 
       {sortedTasks.map((task) => (
-        <Card key={task.id} className="mb-3">
+        <Card key={task.id} className="task-card mb-3">
           <Card.Body>
             <div className="d-flex align-items-center justify-content-between">
               <div className="d-flex align-items-center">
@@ -62,31 +68,24 @@ const Dashboard = () => {
                   checked={task.completed}
                   onChange={() => toggleComplete(task.id)}
                   className="me-3"
-                  style={{ listStyleType: "none" }}
                 />
                 <span
-                  className={`form-check-label ${
+                  className={`form-check-label task-title ${
                     task.completed
                       ? "text-decoration-line-through text-muted"
                       : ""
                   }`}
                 >
-                  {task.title}
+                  <strong>{task.title}</strong>
                 </span>
                 <span
-                  style={{
-                    display: "inline-block",
-                    width: "15px",
-                    height: "15px",
-                    backgroundColor:
-                      task.priority === "high"
-                        ? "red"
-                        : task.priority === "medium"
-                        ? "orange"
-                        : "#98FF98",
-                    borderRadius: "2px",
-                    marginLeft: "8px",
-                  }}
+                  className={`priority-indicator ${
+                    task.priority === "high"
+                      ? "priority-high"
+                      : task.priority === "medium"
+                      ? "priority-medium"
+                      : "priority-low"
+                  }`}
                 />
               </div>
 
@@ -107,8 +106,8 @@ const Dashboard = () => {
             </div>
 
             {task.dueDate && (
-              <small className="text-muted ms-4">
-                Due: {new Date(task.dueDate).toLocaleDateString()}
+              <small className="text-muted due-date">
+                <em>Due: {new Date(task.dueDate).toLocaleDateString()}</em>{" "}
               </small>
             )}
 
@@ -116,6 +115,7 @@ const Dashboard = () => {
               <Button
                 variant="link"
                 size="sm"
+                className="toggle-subtasks-btn"
                 onClick={() =>
                   setExpandedTaskIds((prev) =>
                     prev.includes(task.id)
@@ -130,33 +130,31 @@ const Dashboard = () => {
               </Button>
             )}
 
-            {task.subtasks && task.subtasks.length > 0 && (
-              <div>
-                {expandedTaskIds.includes(task.id) && (
-                  <div className="ms-4 mt-2">
-                    {task.subtasks.map((subtask) => (
-                      <div className="form-check mb-1" key={subtask.id}>
-                        <input
-                          type="checkbox"
-                          className="form-check-input"
-                          checked={subtask.completed}
-                          onChange={() => toggleSubtasks(task.id, subtask.id)}
-                        />
-                        <label
-                          className={`form-check-label ms-2 ${
-                            subtask.completed
-                              ? "text-decoration-line-through text-muted"
-                              : ""
-                          }`}
-                        >
-                          {subtask.title}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+            {task.subtasks &&
+              task.subtasks.length > 0 &&
+              expandedTaskIds.includes(task.id) && (
+                <div className="ms-4 mt-2">
+                  {task.subtasks.map((subtask) => (
+                    <div className="form-check mb-1" key={subtask.id}>
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        checked={subtask.completed}
+                        onChange={() => toggleSubtasks(task.id, subtask.id)}
+                      />
+                      <label
+                        className={`form-check-label ms-2 ${
+                          subtask.completed
+                            ? "text-decoration-line-through text-muted"
+                            : ""
+                        }`}
+                      >
+                        {subtask.title}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
           </Card.Body>
         </Card>
       ))}
