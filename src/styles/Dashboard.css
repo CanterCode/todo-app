@@ -85,3 +85,17 @@
 .priority-low {
   background-color: #73d13d;
 }
+
+.task-title.completed {
+  text-decoration: line-through;
+  color: #a8d5a2;
+  font-weight: 500;
+  position: relative;
+}
+
+.task-title.completed::before {
+  content: "✔";
+  color: #28a745;
+  font-weight: bold;
+  margin-right: 8px;
+}

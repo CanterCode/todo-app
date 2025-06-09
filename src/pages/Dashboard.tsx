@@ -13,21 +13,20 @@ const Dashboard = () => {
   const [expandedTaskIds, setExpandedTaskIds] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState<"dueDate" | "priority">("dueDate");
 
-  const sortedTasks = [...tasks].sort((a, b) => {
-    if (sortBy === "dueDate") {
-      const dateA = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-      const dateB = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
-      return dateA - dateB;
-    }
-
-    // Priority sorting
-    const priorityRank: { [key: string]: number } = {
-      high: 1,
-      medium: 2,
-      low: 3,
-    };
-    return priorityRank[a.priority] - priorityRank[b.priority];
-  });
+  const sortedTasks = [...tasks]
+    .sort((a, b) => {
+      if (sortBy === "dueDate") {
+        return (
+          new Date(a.dueDate || "").getTime() -
+          new Date(b.dueDate || "").getTime()
+        );
+      } else if (sortBy === "priority") {
+        const priorityMap = { high: 1, medium: 2, low: 3 };
+        return priorityMap[a.priority] - priorityMap[b.priority];
+      }
+      return 0;
+    })
+    .sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
 
   const toggleComplete = (taskId: number) => {
     const task = tasks.find((t) => t.id === taskId);
@@ -71,9 +70,7 @@ const Dashboard = () => {
                 />
                 <span
                   className={`form-check-label task-title ${
-                    task.completed
-                      ? "text-decoration-line-through text-muted"
-                      : ""
+                    task.completed ? "completed" : ""
                   }`}
                 >
                   <strong>{task.title}</strong>
